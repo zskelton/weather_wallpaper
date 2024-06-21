@@ -23,6 +23,18 @@ body {
   padding: 10px;
 }
 
+#debugger_output {
+  position: absolute;
+  z-index: 100 !important;
+  right: 10px;
+  top: 10px;
+  width: 100px;
+  background-color: #ffffff80;
+  border-radius: 10px;
+  overflow: auto;
+  padding: 10px;
+}
+
 img {
   position: absolute;
   z-index: 1;

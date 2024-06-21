@@ -10,11 +10,24 @@
     <div id="container">
       <img id="background" src="./images/background.jpg"/>
       <canvas id="canvas"></canvas>
-      <div id="debugger">
+      <section id="debugger" class="debug">
         <button id="start">Start</button>
         <button id="stop" >Stop</button>
         <button id="clear">Clear</button>
-      </div>
+        <label for="weather">Weather:</label>
+        <select id="weather">
+          <option value="clear">Clear</option>
+          <option value="rainy">Rainy</option>
+          <option value="snowy">Snowy</option>
+        </select>
+        <label for="cloudy">Cloudy:</label>
+        <input type="checkbox" id="cloudy" />
+      </section>
+      <section id="debugger_output" class="debug">
+        <p id="status_output">Power: <span id="status_text" style="color: red">Off</span></p>
+        <p id="weather_output">Weather: <span id="weather_text">Clear</span></p>
+        <p id="cloudy_output">Cloudy: <span id="cloudy_text">☀</span></p>
+      </section>
     </div>
   </body>
   <script src="./script/index.js"></script>
