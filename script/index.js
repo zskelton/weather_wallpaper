@@ -12,14 +12,20 @@ let debug = true;
 // FUNCTIONS
 const setpower = (on) => {
   const status_text = document.getElementById('status_text');
+  const stop_btn = document.getElementById('stop');
+  const start_btn = document.getElementById('start');
   if (on) {
     power = true;
     status_text.innerHTML = "On";
     status_text.style = "color: green";
+    stop_btn.disabled = false;
+    start_btn.disabled = true;
   } else {
     power = false;
     status_text.innerHTML = "Off";
     status_text.style = "color: red";
+    stop_btn.disabled = true;
+    start_btn.disabled = false;
   }
 }
 
@@ -91,11 +97,14 @@ document.addEventListener('keydown', function(event) {
     event.preventDefault();
     debug = !debug;
     const debugs = document.getElementsByClassName('debug');
+    const notification = document.getElementById('notification');
     for (let i = 0; i < debugs.length; i++) {
       if (debug) {
         debugs[i].style = "display: block";
+        notification.style = "display: none";
       } else {
         debugs[i].style = "display: none";
+        notification.style = "display: block";
       }
     }
   }

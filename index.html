@@ -12,7 +12,7 @@
       <canvas id="canvas"></canvas>
       <section id="debugger" class="debug">
         <button id="start">Start</button>
-        <button id="stop" >Stop</button>
+        <button id="stop" disabled>Stop</button>
         <button id="clear">Clear</button>
         <label for="weather">Weather:</label>
         <select id="weather">
@@ -27,6 +27,9 @@
         <p id="status_output">Power: <span id="status_text" style="color: red">Off</span></p>
         <p id="weather_output">Weather: <span id="weather_text">Clear</span></p>
         <p id="cloudy_output">Cloudy: <span id="cloudy_text">☀</span></p>
+      </section>
+      <section id="notification" style="display: none">
+        <p id="notification_text">Press <kbd>Ctrl</kbd> + <kbd>D</kbd> to open Debug Panel.</p>
       </section>
     </div>
   </body>
