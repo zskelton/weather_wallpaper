@@ -1,16 +1,14 @@
-/* 6/19/2024 - Live Weather Wallpaper */
-/* Adds a layer of weather on your background image. */
+// A class for snowy days.
 
-// VARIABLES
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-let power = true;
-let weather = "Snow";
-let cloudy = false;
-let debug = true;
-let snowparticles = [];
-let angle = 0;
-let mp = 50;
+class SnowyDay {
+  constructor(_canvas, _ctx) {
+    this.canvas = _canvas;
+    this.ctx = _ctx;
+    this.particles = [];
+    this.angle = 0;
+    this.mp = 50;
+  }
+}
 
 // GENERATE WEATHER VARIABLES
 const generate_snow = (_mp = 50) => {
