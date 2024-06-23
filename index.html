@@ -8,24 +8,34 @@
   </head>
   <body>
     <div id="container">
-      <img id="background" src="./images/background.jpg"/>
+      <img id="cloud" src="./images/cloud.png" style="display: none" />
+      <img id="background" src="./images/background.jpg" />
       <canvas id="canvas"></canvas>
-      <section id="debugger" class="debug">
-        <button id="start">Start</button>
-        <button id="stop" disabled>Stop</button>
+      <section id="debugger" class="debug" style="display: block">
+        <button id="start" disabled>Start</button>
+        <button id="stop">Stop</button>
         <button id="clear">Clear</button>
-        <label for="weather">Weather:</label>
-        <select id="weather">
-          <option value="clear">Clear</option>
-          <option value="rainy">Rainy</option>
-          <option value="snowy">Snowy</option>
-        </select>
+        <fieldset>
+          <legend>Select weather:</legend>
+          <div>
+            <input type="radio" id="clear" name="weather_opts" value="Clear" />
+            <label for="clear">Clear</label>
+          </div>
+          <div>
+            <input type="radio" id="snowy" name="weather_opts" value="Snow" />
+            <label for="snowy">Snowy</label>
+          </div>
+          <div>
+            <input type="radio" id="rainy" name="weather_opts" value="Rain" checked />
+            <label for="rainy">Rainy</label>
+          </div>
+        </fieldset>
         <label for="cloudy">Cloudy:</label>
         <input type="checkbox" id="cloudy" />
       </section>
-      <section id="debugger_output" class="debug">
-        <p id="status_output">Power: <span id="status_text" style="color: red">Off</span></p>
-        <p id="weather_output">Weather: <span id="weather_text">Clear</span></p>
+      <section id="debugger_output" class="debug" style="display: block">
+        <p id="status_output">Power: <span id="status_text" style="color: green">On</span></p>
+        <p id="weather_output">Weather: <span id="weather_text">Rainy</span></p>
         <p id="cloudy_output">Cloudy: <span id="cloudy_text">☀</span></p>
       </section>
       <section id="notification" style="display: none">
@@ -33,5 +43,7 @@
       </section>
     </div>
   </body>
+  <script src="./script/rainyday.js"></script>
+  <script src="./script/snowyday.js"></script>
   <script src="./script/index.js"></script>
 </html>
