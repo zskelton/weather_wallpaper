@@ -35,6 +35,11 @@ const setweather = (_weather) => {
 }
 
 const setcloudy = (_cloudy) => {
+  const cloud = document.getElementById('cloud');
+  cloud.style = _cloudy ? "display: block" : "display: none";
+  const background = document.getElementById('background');
+  background.style = _cloudy ? "filter: grayscale(0.5)" : "filter: grayscale(0)";
+
   const cloudy_text = document.getElementById('cloudy_text');
   cloudy_text.innerHTML = _cloudy ? "☁" : "☀";
   cloudy = _cloudy;

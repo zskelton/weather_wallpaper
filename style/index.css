@@ -48,11 +48,21 @@ body {
   padding: 10px;
 }
 
-img {
+img#background {
   position: absolute;
   z-index: 1;
   width: 100vw;
   height: 100vh;
+}
+
+img#cloud {
+  position: absolute;
+  z-index: 99;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 25vh;
 }
 
 canvas {
