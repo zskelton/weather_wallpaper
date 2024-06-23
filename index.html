@@ -8,11 +8,11 @@
   </head>
   <body>
     <div id="container">
-      <img id="background" src="./images/background.jpg"/>
+      <img id="background" src="./images/background.jpg" />
       <canvas id="canvas"></canvas>
-      <section id="debugger" class="debug">
-        <button id="start">Start</button>
-        <button id="stop" disabled>Stop</button>
+      <section id="debugger" class="debug" style="display: block">
+        <button id="start" disabled>Start</button>
+        <button id="stop">Stop</button>
         <button id="clear">Clear</button>
         <fieldset>
           <legend>Select weather:</legend>
@@ -21,18 +21,18 @@
             <label for="clear">Clear</label>
           </div>
           <div>
-            <input type="radio" id="snowy" name="weather_opts" value="Snowy" />
+            <input type="radio" id="snowy" name="weather_opts" value="Snow" checked />
             <label for="snowy">Snowy</label>
           </div>
           <div>
-            <input type="radio" id="rainy" name="weather_opts" value="Rainy" />
+            <input type="radio" id="rainy" name="weather_opts" value="Rain" />
             <label for="rainy">Rainy</label>
           </div>
         </fieldset>
         <label for="cloudy">Cloudy:</label>
         <input type="checkbox" id="cloudy" />
       </section>
-      <section id="debugger_output" class="debug">
+      <section id="debugger_output" class="debug" style="display: block">
         <p id="status_output">Power: <span id="status_text" style="color: green">On</span></p>
         <p id="weather_output">Weather: <span id="weather_text">Snowy</span></p>
         <p id="cloudy_output">Cloudy: <span id="cloudy_text">☀</span></p>
@@ -42,6 +42,7 @@
       </section>
     </div>
   </body>
-  <script src="./script/snwoday.js"></script>
+  <script src="./script/rainyday.js"></script>
+  <script src="./script/snowyday.js"></script>
   <script src="./script/index.js"></script>
 </html>

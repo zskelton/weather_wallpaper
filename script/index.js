@@ -7,85 +7,28 @@ const ctx = canvas.getContext('2d');
 let power = true;
 let weather = "Snow";
 let cloudy = false;
-let debug = true;
-let snowparticles = [];
-let angle = 0;
-let mp = 50;
+let debug = false;
 
-// GENERATE WEATHER VARIABLES
-const generate_snow = (_mp = 50) => {
-  mp = _mp;
-  const particles = [];
-  for (let i = 0; i < mp; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      r: Math.random() * 4 + 1,
-      d: Math.random() * mp
-    });
-  }
-  snowparticles = [...particles];
-}
-
-// WEATHER EFFECTS
-const draw_snow = () => {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-  ctx.beginPath();
-  for (let i = 0; i < mp; i++) {
-    const p = snowparticles[i];
-    ctx.moveTo(p.x, p.y);
-    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, true);
-  }
-  ctx.fill();
-
-  // Update snow position
-  angle += 0.01
-  for (let i = 0; i < mp; i++) {
-    const p = snowparticles[i];
-    p.y += Math.cos(p.d) + 1 + p.r / 2;
-    p.x += Math.sin(p.d) * 2;
-
-    // If snow reaches the bottom, send it back to the top
-    if (p.x > canvas.width + 5 || p.x < -5 || p.y > canvas.height) {
-      if (i % 3 > 0) {
-        snowparticles[i] = { x: Math.random() * canvas.width, y: -10, r: p.r, d: p.d };
-      } else {
-        if (Math.sin(p.d) > 0) {
-          snowparticles[i] = { x: -5, y: Math.random() * canvas.height, r: p.r, d: p.d };
-        } else {
-          snowparticles[i] = { x: canvas.width + 5, y: Math.random() * canvas.height, r: p.r, d: p.d };
-        }
-      }
-    }
-  }
-}
+let snowday = null;
+let rainday = null;
 
 // FUNCTIONS
-const reset_variables = () => {
-  snowparticles = [];
-}
-
-const setpower = (on) => {
+const setpower = (powerstatus) => {
   const status_text = document.getElementById('status_text');
   const stop_btn = document.getElementById('stop');
   const start_btn = document.getElementById('start');
-  if (on) {
-    power = true;
-    status_text.innerHTML = "On";
-    status_text.style = "color: green";
-    stop_btn.disabled = false;
-    start_btn.disabled = true;
-  } else {
-    power = false;
-    status_text.innerHTML = "Off";
-    status_text.style = "color: red";
-    stop_btn.disabled = true;
-    start_btn.disabled = false;
+  power = powerstatus;
+  status_text.innerHTML = power ? "On" : "Off";
+  status_text.style = power ? "color: green" : "color: red";
+  stop_btn.disabled = power ? false : true;
+  start_btn.disabled = power ? true : false;
+  if (!power) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 }
 
 const setweather = (_weather) => {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   const weather_text = document.getElementById('weather_text');
   weather_text.innerHTML = _weather;
   weather = _weather;
@@ -93,11 +36,7 @@ const setweather = (_weather) => {
 
 const setcloudy = (_cloudy) => {
   const cloudy_text = document.getElementById('cloudy_text');
-  if (_cloudy) {
-    cloudy_text.innerHTML = "☁";
-  } else {
-    cloudy_text.innerHTML = "☀";
-  }
+  cloudy_text.innerHTML = _cloudy ? "☁" : "☀";
   cloudy = _cloudy;
 }
 
@@ -105,7 +44,8 @@ const main = () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  generate_snow(50);
+  snowday = new SnowyDay(canvas, ctx);
+  rainday = new RainyDay(canvas, ctx);
 
   // Loop
   // if on, draw current weather
@@ -114,7 +54,12 @@ const main = () => {
     if (power) {
       switch (weather) {
         case "Snow":
-          draw_snow();
+          snowday.draw();
+          snowday.update();
+          break;
+        case "Rain":
+          rainday.draw();
+          rainday.update();
           break;
         default:
           ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -128,8 +73,6 @@ main();
 
 // EVENT LISTENERS
 document.getElementById('start').addEventListener('click', () => {
-  ctx.fillStyle = 'red';
-  ctx.fillRect(100, 100, 100, 100);
   setpower(true);
 });
 
@@ -141,38 +84,17 @@ document.getElementById('clear').addEventListener('click', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
 
-
 document.querySelectorAll('input[name="weather_opts"]').forEach((input) => {
   input.addEventListener('change', (event) => {
-    reset_variables();
-    console.log(event.target.value);
-    switch (event.target.value) {
-      case "Clear":
-        setweather("Clear");
-        break;
-      case "Rainy":
-        setweather("Rain");
-        break;
-      case "Snowy":
-        setweather("Snow");
-        break;
-      default:
-        setweather("Clear");
-    }
-  }
-  );
+    setweather(event.target.value);
+  });
 });
 
 document.getElementById('cloudy').addEventListener('change', (event) => {
-  const cloudy_text = document.getElementById('cloudy_text');
-  if (event.target.checked) {
-    cloudy = true;
-  } else {
-    cloudy = false;
-  }
-  setcloudy(cloudy);
+  setcloudy(event.target.checked);
 });
 
+// Catch Debug
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.key === 'd') {
     event.preventDefault();
