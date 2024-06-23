@@ -5,7 +5,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 let power = true;
-let weather = "Snow";
+let weather = "Rain";
 let cloudy = false;
 let debug = false;
 
