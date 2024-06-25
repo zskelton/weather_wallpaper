@@ -32,11 +32,14 @@
         </fieldset>
         <label for="cloudy">Cloudy:</label>
         <input type="checkbox" id="cloudy" />
+        <input type="range" id="cloudiness" min="0" max="1" step="0.1" value="0" />
       </section>
       <section id="debugger_output" class="debug" style="display: block">
         <p id="status_output">Power: <span id="status_text" style="color: green">On</span></p>
         <p id="weather_output">Weather: <span id="weather_text">Rainy</span></p>
         <p id="cloudy_output">Cloudy: <span id="cloudy_text">☀</span></p>
+        <p id="cloudiness_output">Cloudiness: <span id="cloudiness_text">0</span></p>
+        <p id="properties_output">Properties:<span id="properties_text"></span></p>
       </section>
       <section id="notification" style="display: none">
         <p id="notification_text">Press <kbd>Ctrl</kbd> + <kbd>D</kbd> to open Debug Panel.</p>
