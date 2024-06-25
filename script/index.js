@@ -13,12 +13,33 @@ let debug = false;
 let snowday = null;
 let rainday = null;
 let properties = {
-  zipcode: null,
-  image: null,
+  zipcode: 50010,
+  image: "images//background.jpg",
   debug: false
 }
 
+// TODO: Make this a secret
+const api_key = "8a501082a8bb88ac1a46b416876164b2";
+
 // FUNCTIONS
+async function getWeather(_zipcode) {
+  const url = `https://api.openweathermap.org/data/2.5/weather?zip=${_zipcode}&appid=${api_key}&units=imperial`
+
+  fetch(url).then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log(data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+}
+
+
 function livelyPropertyListener(name, val) {
   const property_text = document.getElementById('properties_text');
 
@@ -88,6 +109,9 @@ const main = () => {
 
   snowday = new SnowyDay(canvas, ctx);
   rainday = new RainyDay(canvas, ctx);
+  weather = getWeather(properties.zipcode).then((data) => {
+    console.log(data);
+  });
 
   // Loop
   // if on, draw current weather
