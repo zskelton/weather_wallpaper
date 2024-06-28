@@ -4,11 +4,6 @@
 // VARIABLES
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-let power = true;
-let weather = "Rain";
-let cloudy = false;
-let cloudiness = 0;
-let debug = false;
 
 let snowday = null;
 let rainday = null;
@@ -39,6 +34,19 @@ async function getWeather(_zipcode) {
   });
 }
 
+function processWeatherData(data) {
+  cloudy = data?.clouds?.all || false;
+  cloudiness = data?.clouds?.all || 0;
+
+  if (data?.rain) {
+    weather = "Rain";
+  } else if (data?.snow) {
+    weather = "Snow";
+  } else {
+    weather = "Clear";
+  }
+}
+
 
 function livelyPropertyListener(name, val) {
   const property_text = document.getElementById('properties_text');
@@ -58,20 +66,6 @@ function livelyPropertyListener(name, val) {
   }
 
   property_text.innerHTML = JSON.stringify(properties, null, 2);
-}
-
-const setpower = (powerstatus) => {
-  const status_text = document.getElementById('status_text');
-  const stop_btn = document.getElementById('stop');
-  const start_btn = document.getElementById('start');
-  power = powerstatus;
-  status_text.innerHTML = power ? "On" : "Off";
-  status_text.style = power ? "color: green" : "color: red";
-  stop_btn.disabled = power ? false : true;
-  start_btn.disabled = power ? true : false;
-  if (!power) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-  }
 }
 
 const setweather = (_weather) => {
@@ -103,49 +97,59 @@ const setcloudiness = (_cloudiness) => {
   cloudiness_text.innerHTML = _cloudiness;
 }
 
+const showWeather = async () => {
+  getWeather(properties?.zipcode || "50010").then((data) => {
+    processWeatherData(data);
+    if (cloudy) {
+      setcloudy(cloudy);
+    }
+
+    if (cloudiness !== 0) {
+      setcloudiness(cloudiness);
+    }
+
+    switch (weather) {
+      case "Snow":
+        snowday.draw();
+        snowday.update();
+        break;
+      case "Rain":
+        rainday.draw();
+        rainday.update();
+        break;
+      default:
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    console.log(data);
+    console.log("Weather: ", weather);
+    console.log("Cloudy: ", cloudy);
+    console.log("Cloudiness: ", cloudiness);
+  });
+}
+
 const main = () => {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
 
   snowday = new SnowyDay(canvas, ctx);
   rainday = new RainyDay(canvas, ctx);
-  weather = getWeather(properties.zipcode).then((data) => {
-    console.log(data);
-  });
 
   // Loop
   // if on, draw current weather
   // if off, clear canvas
-  setInterval(() => {
-    if (power) {
-      switch (weather) {
-        case "Snow":
-          snowday.draw();
-          snowday.update();
-          break;
-        case "Rain":
-          rainday.draw();
-          rainday.update();
-          break;
-        default:
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-      }
-    }
-  }, 1000 / 60);
+
+  showWeather();
+
+  // setInterval(() => {
+  //   showWeather();
+  // }, 1000 * 15);
 }
 
 // START
 main();
 
 // EVENT LISTENERS
-document.getElementById('start').addEventListener('click', () => {
-  setpower(true);
-});
-
-document.getElementById('stop').addEventListener('click', () => {
-  setpower(false);
-});
-
 document.getElementById('clear').addEventListener('click', () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 });
@@ -170,11 +174,11 @@ document.getElementById('cloudiness').addEventListener('change', (event) => {
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.key === 'd') {
     event.preventDefault();
-    debug = !debug;
+    properties.debug = !proerpties.debug;
     const debugs = document.getElementsByClassName('debug');
     const notification = document.getElementById('notification');
     for (let i = 0; i < debugs.length; i++) {
-      if (debug) {
+      if (properties.debug) {
         debugs[i].style = "display: block";
         notification.style = "display: none";
       } else {
