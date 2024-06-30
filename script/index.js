@@ -8,9 +8,15 @@ const ctx = canvas.getContext('2d');
 let snowday = null;
 let rainday = null;
 let properties = {
-  zipcode: 50010,
+  zipcode: 10001,
   image: "images//background.jpg",
   debug: false
+}
+
+let currentWeather = {
+  weather: "Clear",
+  cloudy: false,
+  cloudiness: 0
 }
 
 // TODO: Make this a secret
@@ -35,19 +41,25 @@ async function getWeather(_zipcode) {
 }
 
 function processWeatherData(data) {
-  cloudy = data?.clouds?.all || false;
-  cloudiness = data?.clouds?.all || 0;
+  currentWeather.cloudy = data?.clouds?.all ? true : false;
+  currentWeather.cloudiness = data?.clouds?.all || 0;
 
-  if (data?.rain) {
-    weather = "Rain";
-  } else if (data?.snow) {
-    weather = "Snow";
-  } else {
-    weather = "Clear";
+  const _weather = data?.weather[0]?.main || "";
+
+  switch (_weather) {
+    case "Rain":
+      currentWeather.weather = "Rain";
+      break;
+    case "Snow":
+      currentWeather.weather = "Snow";
+      break;
+    default:
+      currentWeather.weather = "Clear";
+      break;
   }
 }
 
-
+// Get Changes to Properties
 function livelyPropertyListener(name, val) {
   const property_text = document.getElementById('properties_text');
 
@@ -68,64 +80,59 @@ function livelyPropertyListener(name, val) {
   property_text.innerHTML = JSON.stringify(properties, null, 2);
 }
 
-const setweather = (_weather) => {
+// Debug Setters
+const setWeatherDebug = (_weather) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   const weather_text = document.getElementById('weather_text');
   weather_text.innerHTML = _weather;
-  weather = _weather;
+  currentWeather.weather = _weather;
 }
 
-const setcloudy = (_cloudy) => {
+const setCloudy = (_cloudy) => {
   const cloud = document.getElementById('cloud');
   cloud.style = _cloudy ? "display: block" : "display: none";
 
   const cloudy_text = document.getElementById('cloudy_text');
   cloudy_text.innerHTML = _cloudy ? "☁" : "☀";
-  cloudy = _cloudy;
+  currentWeather.cloudy = _cloudy;
 }
 
-const setcloudiness = (_cloudiness) => {
+const setCloudiness = (_cloudiness) => {
   const background = document.getElementById('background');
   background.style = `filter: grayscale(${_cloudiness})`;
 
   const cloud = document.getElementById('cloud');
   cloud.style = `opacity: ${_cloudiness}`;
-  cloudiness = _cloudiness;
+  currentWeather.cloudiness = _cloudiness;
 
   const cloudiness_text = document.getElementById('cloudiness_text');
   cloudiness_text.innerHTML = _cloudiness;
 }
 
-const showWeather = async () => {
+
+const setWeather = async () => {
   getWeather(properties?.zipcode || "50010").then((data) => {
     processWeatherData(data);
-    if (cloudy) {
-      setcloudy(cloudy);
-    }
-
-    if (cloudiness !== 0) {
-      setcloudiness(cloudiness);
-    }
-
-    switch (weather) {
-      case "Snow":
-        snowday.draw();
-        snowday.update();
-        break;
-      case "Rain":
-        rainday.draw();
-        rainday.update();
-        break;
-      default:
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    
-    console.log(data);
-    console.log("Weather: ", weather);
-    console.log("Cloudy: ", cloudy);
-    console.log("Cloudiness: ", cloudiness);
   });
+}
+
+const drawWeather = () => {
+  switch (currentWeather.weather) {
+    case "Snow":
+      snowday.draw();
+      snowday.update();
+      break;
+    case "Rain":
+      rainday.draw();
+      rainday.update();
+      break;
+    default:
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  setCloudiness(currentWeather.cloudiness);
+  setCloudy(currentWeather.cloudy);
 }
 
 const main = () => {
@@ -135,15 +142,21 @@ const main = () => {
   snowday = new SnowyDay(canvas, ctx);
   rainday = new RainyDay(canvas, ctx);
 
-  // Loop
-  // if on, draw current weather
-  // if off, clear canvas
+  // Initiatialize
+  setWeather();
+  drawWeather();
 
-  showWeather();
+  console.log(currentWeather);
+  
 
-  // setInterval(() => {
-  //   showWeather();
-  // }, 1000 * 15);
+  // Set Updaters
+  setInterval(() => {
+    setWeather();
+  }, 1000 * 60 * 15); // Pull new weather every 15 minutes
+
+  setInterval(() => {
+    drawWeather();
+  }, 1000 / 60); // Draw weather every 60th of a second
 }
 
 // START
@@ -156,17 +169,17 @@ document.getElementById('clear').addEventListener('click', () => {
 
 document.querySelectorAll('input[name="weather_opts"]').forEach((input) => {
   input.addEventListener('change', (event) => {
-    setweather(event.target.value);
+    setWeatherDebug(event.target.value);
   });
 });
 
 document.getElementById('cloudy').addEventListener('change', (event) => {
-  setcloudy(event.target.checked);
+  setCloudy(event.target.checked);
 });
 
 document.getElementById('cloudiness').addEventListener('change', (event) => {
   if (cloudy) {
-    setcloudiness(event.target.value);
+    setCloudiness(event.target.value);
   }
 });
 
@@ -174,16 +187,16 @@ document.getElementById('cloudiness').addEventListener('change', (event) => {
 document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.key === 'd') {
     event.preventDefault();
-    properties.debug = !proerpties.debug;
+    properties.debug = !properties.debug;
     const debugs = document.getElementsByClassName('debug');
-    const notification = document.getElementById('notification');
+    // const notification = document.getElementById('notification');
     for (let i = 0; i < debugs.length; i++) {
       if (properties.debug) {
         debugs[i].style = "display: block";
-        notification.style = "display: none";
+        // notification.style = "display: none";
       } else {
         debugs[i].style = "display: none";
-        notification.style = "display: block";
+        // notification.style = "display: block";
       }
     }
   }
