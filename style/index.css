@@ -35,6 +35,21 @@ body {
   padding: 10px;
 }
 
+#location_info {
+  position: absolute;
+  z-index: 100 !important;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #ffffff;
+  background-color: #00000066;
+  border-radius: 10px;
+  font-size: 50px;
+  font-family: "fantasy";
+  overflow: auto;
+  padding: 5px;
+}
+
 #notification {
   position: absolute;
   z-index: 100 !important;

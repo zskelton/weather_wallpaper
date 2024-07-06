@@ -5,6 +5,7 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
+let network_status = true;
 let snowday = null;
 let rainday = null;
 let properties = {
@@ -16,7 +17,9 @@ let properties = {
 let currentWeather = {
   weather: "Clear",
   cloudy: false,
-  cloudiness: 0
+  cloudiness: 0,
+  temperature: 0,
+  location: "NA"
 }
 
 // TODO: Make this a secret
@@ -26,23 +29,26 @@ const api_key = "8a501082a8bb88ac1a46b416876164b2";
 async function getWeather(_zipcode) {
   const url = `https://api.openweathermap.org/data/2.5/weather?zip=${_zipcode}&appid=${api_key}&units=imperial`
 
-  fetch(url).then(response => {
+  const _data = await fetch(url).then(response => {
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      console.error("Failed to fetch weather data");
+      return false;
     }
     return response.json();
+  }).catch(() => {
+    return false;
   })
-  .then(data => {
-    console.log(data);
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+
+  network_status = _data ? true : false;
+
+  return _data
 }
 
 function processWeatherData(data) {
   currentWeather.cloudy = data?.clouds?.all ? true : false;
   currentWeather.cloudiness = data?.clouds?.all || 0;
+  currentWeather.temperature = Math.floor(data?.main?.temp) || 0;
+  currentWeather.location = data?.name || "";
 
   const _weather = data?.weather[0]?.main || "";
 
@@ -66,12 +72,15 @@ function livelyPropertyListener(name, val) {
   switch(name) {
     case "zipcode":
       properties.zipcode = val;
+      setWeather();
       break;
     case "background":
       properties.image = val;
+      setBackground();
       break;
     case "debug":
       properties.debug = val;
+      setDebug();
       break;
     default:
       break;
@@ -80,7 +89,26 @@ function livelyPropertyListener(name, val) {
   property_text.innerHTML = JSON.stringify(properties, null, 2);
 }
 
+// Change Background Image
+const setBackground = () => {
+  const _background = getElementById("background");
+  _background.src = properties.image;
+}
+
+
 // Debug Setters
+const setDebug = () => {
+  const debugs = document.getElementsByClassName('debug');
+
+  for (let i = 0; i < debugs.length; i++) {
+    if (properties.debug) {
+      debugs[i].style = "display: block";
+    } else {
+      debugs[i].style = "display: none";
+    }
+  }
+}
+
 const setWeatherDebug = (_weather) => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -89,6 +117,7 @@ const setWeatherDebug = (_weather) => {
   currentWeather.weather = _weather;
 }
 
+// Weather Setters
 const setCloudy = (_cloudy) => {
   const cloud = document.getElementById('cloud');
   cloud.style = _cloudy ? "display: block" : "display: none";
@@ -112,9 +141,26 @@ const setCloudiness = (_cloudiness) => {
 
 
 const setWeather = async () => {
-  getWeather(properties?.zipcode || "50010").then((data) => {
-    processWeatherData(data);
-  });
+  const _data = await getWeather(properties?.zipcode || "50010");
+
+  if (!_data) {
+    return;
+  } else {
+    processWeatherData(_data);
+  }
+}
+
+const setLocationInfo = () => {
+  const location = document.getElementById('location_output');
+  const _info = `${currentWeather.location}, ${currentWeather.temperature}°F`
+
+  if (network_status) {
+    location.innerHTML = _info;
+    location.style = "color: white"
+  } else {
+    location.innerHTML = "Network Error";
+    location.style = "color: red"
+  }
 }
 
 const drawWeather = () => {
@@ -133,6 +179,7 @@ const drawWeather = () => {
 
   setCloudiness(currentWeather.cloudiness);
   setCloudy(currentWeather.cloudy);
+  setLocationInfo();
 }
 
 const main = () => {
@@ -144,10 +191,6 @@ const main = () => {
 
   // Initiatialize
   setWeather();
-  drawWeather();
-
-  console.log(currentWeather);
-  
 
   // Set Updaters
   setInterval(() => {
@@ -188,16 +231,6 @@ document.addEventListener('keydown', function(event) {
   if (event.ctrlKey && event.key === 'd') {
     event.preventDefault();
     properties.debug = !properties.debug;
-    const debugs = document.getElementsByClassName('debug');
-    // const notification = document.getElementById('notification');
-    for (let i = 0; i < debugs.length; i++) {
-      if (properties.debug) {
-        debugs[i].style = "display: block";
-        // notification.style = "display: none";
-      } else {
-        debugs[i].style = "display: none";
-        // notification.style = "display: block";
-      }
-    }
+    setDebug();
   }
 });
