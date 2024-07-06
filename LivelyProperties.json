@@ -1,0 +1,21 @@
+{
+  "zipcode": {
+    "text": "Enter your Zip Code:",
+    "type": "textbox",
+    "value": "50010",
+    "help": "Enter your zip code to get the weather. (US only)"
+  },
+  "background": {
+    "type": "folderDropdown",
+    "value": "background.jpg",
+    "text": "Image",
+    "filter": "*.jpg|*.png|*.gif",
+    "folder": "images"
+    },
+  "debug": {
+    "type": "checkbox",
+    "value": true,
+    "help": "Set Debug to See Variables",
+    "text": "Debug Mode"
+  }
+}
