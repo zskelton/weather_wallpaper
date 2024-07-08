@@ -22,9 +22,6 @@ let currentWeather = {
   location: "NA"
 }
 
-// TODO: Make this a secret
-const api_key = "8a501082a8bb88ac1a46b416876164b2";
-
 // FUNCTIONS
 async function getWeather(_zipcode) {
   const url = `https://api.openweathermap.org/data/2.5/weather?zip=${_zipcode}&appid=${api_key}&units=imperial`
@@ -177,7 +174,7 @@ const drawWeather = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  setCloudiness(currentWeather.cloudiness);
+  setCloudiness(currentWeather.cloudiness * 0.1);
   setCloudy(currentWeather.cloudy);
   setLocationInfo();
 }
@@ -199,7 +196,7 @@ const main = () => {
 
   setInterval(() => {
     drawWeather();
-  }, 1000 / 60); // Draw weather every 60th of a second
+  }, 1000 / 30); // Draw weather every 60th of a second
 }
 
 // START
