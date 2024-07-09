@@ -9,7 +9,7 @@ let network_status = true;
 let snowday = null;
 let rainday = null;
 let properties = {
-  zipcode: 10001,
+  zipcode: 50201,
   image: "images//background.jpg",
   debug: false
 }
@@ -129,7 +129,7 @@ const setCloudiness = (_cloudiness) => {
   background.style = `filter: grayscale(${_cloudiness})`;
 
   const cloud = document.getElementById('cloud');
-  cloud.style = `opacity: ${_cloudiness}`;
+  cloud.style = `opacity: ${_cloudiness * 0.01}`;
   currentWeather.cloudiness = _cloudiness;
 
   const cloudiness_text = document.getElementById('cloudiness_text');
@@ -143,6 +143,7 @@ const setWeather = async () => {
   if (!_data) {
     return;
   } else {
+    console.log(_data);
     processWeatherData(_data);
   }
 }
@@ -174,7 +175,7 @@ const drawWeather = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
 
-  setCloudiness(currentWeather.cloudiness * 0.1);
+  setCloudiness(currentWeather.cloudiness);
   setCloudy(currentWeather.cloudy);
   setLocationInfo();
 }
